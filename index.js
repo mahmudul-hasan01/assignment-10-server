@@ -30,7 +30,12 @@ async function run() {
        const result =await database.find().toArray()
        res.send(result)
     })
-   
+    app.get('/cars/:id',async(req,res)=>{
+      const id =req.params.id
+      const query ={_id: new ObjectId(id)}
+      const result =await database.findOne(query)
+      res.send(result)
+    })
     app.post('/cars',async(req,res)=>{
         const details =req.body
         const result =await database.insertOne(details)
