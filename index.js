@@ -1,8 +1,8 @@
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const express = require('express')
-const cors =require('cors')
+const cors = require('cors')
 const app = express()
-const port =process.env.PORT || 5000
+const port = process.env.PORT || 5000
 
 //   assignment 
 //   JBQgyFhotvl1g34S
@@ -25,24 +25,43 @@ async function run() {
     await client.connect();
     const database = client.db("CarDetailsDb").collection("CarInfo");
     const cartInfo = client.db("CarDetailsDb").collection("cart");
-    
-    app.get('/cars',async(req,res)=>{
-       const result =await database.find().toArray()
-       res.send(result)
-    })
-    app.get('/cars/:id',async(req,res)=>{
-      const id =req.params.id
-      const query ={_id: new ObjectId(id)}
-      const result =await database.findOne(query)
+
+    app.get('/cars', async (req, res) => {
+      const result = await database.find().toArray()
       res.send(result)
     })
-    app.post('/cars',async(req,res)=>{
-        const details =req.body
-        const result =await database.insertOne(details)
-        res.send(result)
+    app.get('/cars/:id', async (req, res) => {
+      const id = req.params.id
+      const query = { _id: new ObjectId(id) }
+      const result = await database.findOne(query)
+      res.send(result)
     })
-    
-
+    app.post('/cars', async (req, res) => {
+      const details = req.body
+      const result = await database.insertOne(details)
+      res.send(result)
+    })
+    app.put('/cars/:id', async (req, res) => {
+      const id = req.params.id
+      const query = { _id: new ObjectId(id) }
+      const options = { upsert: true };
+      const bodyData = req.body
+      console.log(bodyData)
+      const update = {
+        $set: {
+          name: bodyData.name,
+          BrandName: bodyData.BrandName,
+          Type: bodyData.Type,
+          Price: bodyData.Price,
+          Image: bodyData.Image,
+          Rating: bodyData.Rating,
+          description: bodyData.description
+        }
+      }
+      const result = await database.updateOne(query, update, options)
+      res.send(result)
+    })
+   
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
