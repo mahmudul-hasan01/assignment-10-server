@@ -66,9 +66,31 @@ async function run() {
       const result = await cartInfo.insertOne(details)
       res.send(result)
     })
-    
+    app.get('/cart', async (req, res) => {
+      const result = await cartInfo.find().toArray()
+      res.send(result)
+    })
+    app.get('/cart/:id', async (req, res) => {
+      const id = req.params.id
+      const query = { _id: new ObjectId(id) }
+      const result = await cartInfo.findOne(query)
+      res.send(result)
+    })
+    app.get('/my-cart/:email', async (req, res) => {
+      const emails = req.params.email
+      const query = { email: emails }
+      const result = await cartInfo.findOne(query)
+      console.log(result)
+      res.send(result)
+    })
+    app.delete('/cart/:id', async (req, res) => {
+      const id = req.params.id
+      const query = { _id: id }
+      const result = await cartInfo.deleteOne(query)
+      res.send(result)
+    })
 
-    await client.db("admin").command({ ping: 1 });
+    // await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
     // await client.close();
